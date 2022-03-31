@@ -5,6 +5,7 @@ const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
+
 //เชื่อมต่อDatabase
 const db = mysql.createConnection({
   user: "root",
@@ -13,7 +14,9 @@ const db = mysql.createConnection({
   database: "measurementandevaluation",
 });
 
-//รับค่าจากDatabase,รับค่า CourseId จาก Log In Page
+{/*หมวดวิชาของสถานศึกษา*/}
+
+//รับค่าวิชาของสถานศึกษาจาก tbcoursesubjects
 app.get("/TableSubject", (req, res) => {
   const sqlSelect =
     "SELECT SubjectId AS id,SubjectNr,SubjectName,SubjectCreditOrScore FROM tbcoursesubjects WHERE CourseId = 011";
@@ -26,47 +29,14 @@ app.get("/TableSubject", (req, res) => {
   });
 });
 
-//รับค่าชั่วโมงการศึกษา, รับค่า CourseId จาก Log In Page
-app.get("/PmeCourse", (req, res) => {
-  const sqlSelect =
-    "SELECT CourseTotalHrs AS Hrs FROM tbpmecourse WHERE CourseId = 011";
-  db.query(sqlSelect, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send(result);
-    }
-  });
-});
-
-//Update CourseHrs
-app.put("/UpdateCourseHrs", (req, res) => {
-  const sqlUpdate =
-  "UPDATE tbpmecourse SET CourseTotalHrs = ? WHERE CourseId=011 ";
-  const CourseHrs = req.body.CourseHrs;
-  db.query(
-    sqlUpdate,[CourseHrs],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send(result);
-      }
-    }
-  );
-});
-
-
-//รับค่าจากAddSubject
+//เพิ่มรายวิชาของสถานศึกษา
 app.post("/AddSubject", (req, res) => {
   const sqlInsert = 
     "INSERT INTO tbcoursesubjects (SubjectId,SubjectNr,SubjectName,SubjectCreditOrScore,CourseId) VALUES(?,?,?,?,?)";
-  //const SubjectId = req.body.SubjectId;
   const SubjectNr = req.body.SubjectNr;
   const SubjectName = req.body.SubjectName;
   const SubjectCreditOrScore = req.body.SubjectCreditOrScore;
   const CourseId = req.body.CourseId;
-  //const SubjectId = `${CourseId}-${SubjectNr}`;
   db.query(
     sqlInsert,
     [`${CourseId}-${SubjectNr}`, SubjectNr, SubjectName, SubjectCreditOrScore, CourseId],
@@ -80,7 +50,7 @@ app.post("/AddSubject", (req, res) => {
   );
 });
 
-//EditSubject
+//แก้ไขรายวิชาของสถานศึกษา
 app.put("/EditSubject", (req, res) => {
   const sqlUpdate =
   "UPDATE tbcoursesubjects SET SubjectNr = ?,SubjectName = ?,SubjectCreditOrScore=? WHERE SubjectId=? ";
@@ -100,7 +70,7 @@ app.put("/EditSubject", (req, res) => {
   );
 });
 
-//delete
+//ลบรายวิชาของสถานศึกษา
 app.delete('/delete/:id',(req,res)=> {
   const id = req.params.id;
   db.query("DELETE FROM tbcoursesubjects WHERE SubjectId = ?", id, (err, result) => {
@@ -112,7 +82,40 @@ app.delete('/delete/:id',(req,res)=> {
   })
 })
 
-//รับค่า AttrPersonnel จาก Database
+{/*ชั่วโมงการศึกษา*/}
+//รับค่าชั่วโมงการศึกษาของหลักสูตรจาก tbpmecourse
+app.get("/PmeCourse", (req, res) => {
+  const sqlSelect =
+    "SELECT CourseTotalHrs AS Hrs FROM tbpmecourse WHERE CourseId = 011";
+  db.query(sqlSelect, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
+
+//แก้ไขชั่วโมงการศึกษาของหลักสูตร
+app.put("/UpdateCourseHrs", (req, res) => {
+  const sqlUpdate =
+  "UPDATE tbpmecourse SET CourseTotalHrs = ? WHERE CourseId=011 ";
+  const CourseHrs = req.body.CourseHrs;
+  db.query(
+    sqlUpdate,[CourseHrs],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+
+{/*คุณลักษณะส่วนบุคคล*/}
+//รับค่าคุณลักษณะส่วนบุคคลจาก tbpersattrcategory
 app.get("/TableAttr", (req, res) => {
   const sqlSelect =
     "SELECT PerAttrCatId AS id,PersAttrCatName,PersAttrCatFullscore FROM tbpersattrcategory";
@@ -125,7 +128,7 @@ app.get("/TableAttr", (req, res) => {
   });
 });
 
-//เพิ่ม AttrPersonnel
+//เพิ่มค่าคุณลักษณะส่วนบุคคล
 app.post("/AddAttr", (req, res) => {
   const sqlInsert = 
     "INSERT INTO tbpersattrcategory (PerAttrCatId,PersAttrCatName,PersAttrCatFullscore) VALUES(?,?,?)";
@@ -134,7 +137,6 @@ app.post("/AddAttr", (req, res) => {
   const PersAttrCatName = req.body.PersAttrCatName;
   const PersAttrCatFullscore = req.body.PersAttrCatFullscore;
 
-  
   db.query(
     sqlInsert,
     [PerAttrCatId, PersAttrCatName, PersAttrCatFullscore],
@@ -148,7 +150,7 @@ app.post("/AddAttr", (req, res) => {
   );
 });
 
-//Edit AttrPersonnel
+//แก้ไขคุณลักษณะส่วนบุคคล
 app.put("/EditAttr", (req, res) => {
   const sqlUpdate =
   "UPDATE tbpersattrcategory SET PersAttrCatName = ?,PersAttrCatFullscore = ? WHERE PerAttrCatId=? ";
@@ -167,7 +169,7 @@ app.put("/EditAttr", (req, res) => {
   );
 });
 
-//deleteAttr
+//ลบคุณลักษณะส่วนบุคคล
 app.delete('/deleteAttr/:id',(req,res)=> {
   const id = req.params.id;
   db.query("DELETE FROM tbpersattrcategory WHERE PerAttrCatId=?", id, (err, result) => {
