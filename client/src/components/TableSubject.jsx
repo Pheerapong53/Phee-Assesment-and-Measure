@@ -7,12 +7,15 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 
 export default function TableSubject() {
+  
+  const server = 'http://localhost:3001';
+  //กำหนดคอลัมน์ให้ Table Datagrid
   const columns = [
     { field: "SubjectNr", headerName: "หมวดวิชาที่", width: 300 },
     { field: "SubjectName", headerName: "ชื่อวิชา", width: 300 },
@@ -53,7 +56,7 @@ export default function TableSubject() {
     },
   ];
 
-  //ตั้งค่า Dialog Delete
+  //ตั้งค่า Alert Dialog Delete
   const [currentSubject, SetCurrentSubject] = useState([]);
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -63,7 +66,7 @@ export default function TableSubject() {
     setOpen(false);
   };
 
-  //ตั้งค่า Dialog ระยะเวลาการศึกษา
+  //ตั้งค่า Alert Dialog ระยะเวลาการศึกษา
   const [open1, setOpen1] = useState(false);
   const handleClickOpen1 = () => {
     setOpen1(true);
@@ -72,9 +75,9 @@ export default function TableSubject() {
     setOpen1(false);
   };
 
-  //ลบObjectผ่าน URL
+  //ลบรายวิชาผ่าน URL
   const toDeleteSubject = (id) => {
-    Axios.delete(`http://localhost:3001/delete/${id}`).then((response) => {
+    Axios.delete(`${server}/delete/${id}`).then((response) => {
       setSubjectList(
         SubjectList.filter((val) => {
           return val.id != id;
@@ -82,7 +85,8 @@ export default function TableSubject() {
       );
     });
   };
-  //ส่งObjectผ่าน URL
+
+  //ส่งรายวิชาที่เลือกผ่าน URL
   const navigate = useNavigate();
   const toEditSubject = (clickedSubject) => {
     navigate("/PageEditSubject", {
@@ -100,7 +104,7 @@ export default function TableSubject() {
   const [search, setSearch] = useState("");
   //รับค่าจากฐานข้อมูล
   useEffect(() => {
-    Axios.get("http://localhost:3001/TableSubject").then((response) => {
+    Axios.get(`${server}/TableSubject`).then((response) => {
       setSubjectList(response.data);
     });
   }, []);
@@ -109,14 +113,14 @@ export default function TableSubject() {
   const [CourseHrs, setCourseHrs] = useState([]);
 
   useEffect(() => {
-    Axios.get("http://localhost:3001/PmeCourse").then((response) => {
+    Axios.get(`${server}/PmeCourse`).then((response) => {
       setCourseHrs(response.data[0].Hrs);
     });
   }, []);
 
   //แก้ไขชั่วโมงการศึกษา
   const UpdateCourseHrs = () => {
-    Axios.put(('http://localhost:3001/UpdateCourseHrs'), {
+    Axios.put((`${server}/UpdateCourseHrs`), {
       CourseHrs: CourseHrs
     }).then((res) => {
         console.log(res);
@@ -156,7 +160,7 @@ export default function TableSubject() {
               rows={SubjectList.filter((val) => {
                 if (search == "") {
                   return val;
-                } else if (val.SubjectName.includes(search)) {
+                } else if (val.SubjectName.toLowerCase().includes(search.toLowerCase())) {
                   return val;
                 }
               })}
@@ -209,8 +213,7 @@ export default function TableSubject() {
                     handleClose1();
                   }}
                 >
-                  {" "}
-                  Yes{" "}
+                  Yes
                 </Button>
                 <Button
                   variant="contained"

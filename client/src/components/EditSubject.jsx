@@ -13,6 +13,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 
 
+
 export default function EditSubject() {
 
    //ตั้งค่า Dialog
@@ -50,6 +51,7 @@ export default function EditSubject() {
 
   return (
     <React.Fragment>
+      
       <div className="cotainerDetail">
         <p className="HeadTextMain">แก้ไขรายวิชา</p>
         <FormControl sx={{ m: 1, width: 500 }} variant="outlined">
@@ -117,6 +119,7 @@ export default function EditSubject() {
             </Button>
           
         </div>
+        
         <Dialog
               open={open}
               onClose={handleClose} 
