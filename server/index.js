@@ -14,8 +14,22 @@ const db = mysql.createConnection({
   database: "measurementandevaluation",
 });
 
-{/*หมวดวิชาของสถานศึกษา*/}
+{/*เลือกสถานศึกษา*/ }
+//รับสถานศึกษาจาก tbpmecourse
+app.get("/Academy", (req, res) => {
+  const sqlSelect =
+    "SELECT CourseId,CourseName,Academy FROM tbpmecourse";
+  db.query(sqlSelect, (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
 
+
+{/*หมวดวิชาของสถานศึกษา*/}
 //รับค่าวิชาของสถานศึกษาจาก tbcoursesubjects
 app.get("/TableSubject", (req, res) => {
   const sqlSelect =

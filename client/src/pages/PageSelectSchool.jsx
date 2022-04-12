@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 //import DropdownSelectSchool from '../components/DropdownSelectSchool'
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -8,8 +8,28 @@ import MenuItem from "@mui/material/MenuItem";
 import ListSubheader from "@mui/material/ListSubheader";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import Axios from "axios";
+
+
 
 export default function PageSelectSchool() {
+
+  const server = 'http://localhost:3001';
+  const [CourseList, setCourseList] = useState([]);
+  //const [search, setSearch] = useState("");
+  //รับค่าจากฐานข้อมูล
+  useEffect(() => {
+    Axios.get(`${server}/Academy`).then((response) => {
+      setCourseList(response.data);
+    });
+  }, []);
+
+  const nameAcademy = CourseList.map(a => a.Academy);
+  const uniqAcademy = Array.from(new Set(nameAcademy));
+  //const nameSchools = (CourseList[0])
+  //console.log(nameAcademy);
+  //console.log(uniqAcademy);
+
   const nameSchools = [
     "วิทยาลัยกองทัพอากาศ",
     "โรงเรียนเสนาธิการทหารอากาศ",
@@ -48,12 +68,20 @@ export default function PageSelectSchool() {
               <Select defaultValue="" id="grouped-select" label="สถานศึกษา">
                 <MenuItem value="">
                   <em>None</em>
+                  
                 </MenuItem>
-                {nameSchools.map((nameSchool) => (
+                
+
+                {uniqAcademy.map((Academy)=>(
+                  <MenuItem value={Academy} key={Academy}>
+                  {Academy}
+                </MenuItem>
+                ))}
+                {/*nameSchools.map((nameSchool) => (
                   <MenuItem value={nameSchool} key={nameSchool}>
                     {nameSchool}
                   </MenuItem>
-                ))}
+                ))*/}
               </Select>
             </FormControl>
             <FormControl sx={{ m: 1, minWidth: 500 }}>
