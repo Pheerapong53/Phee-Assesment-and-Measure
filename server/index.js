@@ -18,7 +18,7 @@ const db = mysql.createConnection({
 //รับสถานศึกษาจาก tbpmecourse
 app.get("/Academy", (req, res) => {
   const sqlSelect =
-    "SELECT CourseId,CourseName,Academy FROM tbpmecourse";
+    "SELECT * FROM tbpmecourse";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       console.log(err);
