@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 //import DropdownSelectSchool from '../components/DropdownSelectSchool'
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -9,6 +9,8 @@ import ListSubheader from "@mui/material/ListSubheader";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -16,7 +18,7 @@ export default function PageSelectSchool() {
 
   const server = 'http://localhost:3001';
   const [CourseList, setCourseList] = useState([]);
-  //const [search, setSearch] = useState("");
+
   //รับค่าจากฐานข้อมูล
   useEffect(() => {
     Axios.get(`${server}/Academy`).then((response) => {
@@ -26,21 +28,44 @@ export default function PageSelectSchool() {
 
   const nameAcademy = CourseList.map(a => a.Academy);
   const uniqAcademy = Array.from(new Set(nameAcademy));
-  //const nameSchools = (CourseList[0])
-  //console.log(nameAcademy);
-  //console.log(uniqAcademy);
 
-  const nameSchools = [
-    "วิทยาลัยกองทัพอากาศ",
-    "โรงเรียนเสนาธิการทหารอากาศ",
-    "โรงเรียนนายทหารอากาศอาวุโส",
-    "โรงเรียนนายทหารชั้นผู้บังคับฝูง",
-    "โรงเรียนนายทหารชั้นผู้บังคับหมวด",
-    "โรงเรียนนายทหารชั้นประทวน",
-    "โรงเรียนครูทหาร",
-    "ศูนย์ภาษา",
-    "สำนักบริหารการศึกษา",
-  ];
+
+  const [CourseName, setCourseName] = useState([]);
+  const handleSelectAcademy = (Academy) => {
+    setCourseName(
+      CourseList.filter((val) => {
+        return val.Academy == Academy;
+      })
+    );
+  };
+
+  const [SelectCourse, setSelectCourse] = useState([]);
+  const handleSelectCourseName = (CourseId) => {
+    setSelectCourse(
+      CourseList.filter((val) => {
+        return val.CourseId == CourseId;
+      })
+    )
+  }
+
+  const navigate = useNavigate();
+  const toQuerySubject = (SelectCourse) => {
+    navigate(`${server}`, {
+      state: {
+        id: SelectCourse.CourseId
+      },
+    });
+  };
+
+  const toLogIn = (a) => {
+    navigate("/login",{
+      state: {
+        CourseId: a[0].CourseId,
+        CourseName: a[0].CourseName,
+        Academy: a[0].Academy,
+      }
+    })
+  }
 
   return (
     <React.Fragment>
@@ -55,82 +80,67 @@ export default function PageSelectSchool() {
       >
         <img src={Logo} alt="logo" className="logoLogin" />
         <p className="HeadTextShcool">ส่วนการศึกษา</p>
-        {/*<React.Fragment>*/}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "column",
-            }}
-          >
-            <FormControl sx={{ m: 1, minWidth: 500 }}>
-              <InputLabel htmlFor="grouped-select">สถานศึกษา</InputLabel>
-              <Select defaultValue="" id="grouped-select" label="สถานศึกษา">
-                <MenuItem value="">
-                  <em>None</em>
-                  
-                </MenuItem>
-                
 
-                {uniqAcademy.map((Academy)=>(
-                  <MenuItem value={Academy} key={Academy}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+          }}
+        >
+          <FormControl sx={{ m: 1, minWidth: 500 }}>
+            <InputLabel htmlFor="Academy">สถานศึกษา</InputLabel>
+            <Select defaultValue="" id="Academy" label="สถานศึกษา"
+              onChange={(event) => {
+                handleSelectAcademy(event.target.value);
+              }}>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {uniqAcademy.map((Academy) => (
+                <MenuItem value={Academy} key={Academy}>
                   {Academy}
                 </MenuItem>
-                ))}
-                {/*nameSchools.map((nameSchool) => (
-                  <MenuItem value={nameSchool} key={nameSchool}>
-                    {nameSchool}
-                  </MenuItem>
-                ))*/}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, minWidth: 500 }}>
-              <InputLabel htmlFor="grouped-select">หลักสูตร</InputLabel>
-              <Select defaultValue="" id="grouped-select" label="หลักสูตร">
-                <MenuItem value="">
-                  <em>None</em>
+              ))}
+
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ m: 1, minWidth: 500 }}>
+            <InputLabel htmlFor="CourseName">หลักสูตร</InputLabel>
+            <Select defaultValue="" id="CourseName" label="หลักสูตร"
+              onChange={(event) => {
+                handleSelectCourseName(event.target.value);
+              }}>
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {CourseName.map((a) => (
+
+                <MenuItem value={a.CourseId} key={a}>
+                  {a.CourseName}
                 </MenuItem>
-                <ListSubheader>วิทยาลัยกองทัพอากาศ</ListSubheader>
-                <MenuItem value={1}>การทัพอากาศ</MenuItem>
-                <ListSubheader>โรงเรียนเสนาธิการทหารอากาศ</ListSubheader>
-                <MenuItem value={2}>เสนาธิการทหารอากาศ</MenuItem>
-                <ListSubheader>โรงเรียนนายทหารอากาศอาวุโส</ListSubheader>
-                <MenuItem value={3}>นายทหารอากาศอาวุโส</MenuItem>
-                <ListSubheader>โรงเรียนนายทหารชั้นผู้บังคับฝูง</ListSubheader>
-                <MenuItem value={4}>นายทหารชั้นผู้บังคับฝูง</MenuItem>
-                <ListSubheader>โรงเรียนนายทหารชั้นผู้บังคับหมวด</ListSubheader>
-                <MenuItem value={5}>นายทหารชั้นผู้บังคับหมวด</MenuItem>
-                <MenuItem value={6}>นายทหารประทวนเป็นนายทหารสัญญาบัตร</MenuItem>
-                <ListSubheader>โรงเรียนนายทหารชั้นประทวน</ListSubheader>
-                <MenuItem value={7}>นายทหารประทวน</MenuItem>
-                <MenuItem value={8}>นายทหารประทวนชั้นพันจ่าอากาศ</MenuItem>
-                <ListSubheader>โรงเรียนครูทหาร</ListSubheader>
-                <MenuItem value={9}>ครูทหารชั้นสัญญาบัตร</MenuItem>
-                <MenuItem value={10}>ครูทหารชั้นประทวน</MenuItem>
-                <MenuItem value={11}>ครูการบินเพื่อฝึกศิษย์การบิน</MenuItem>
-                <ListSubheader>ศูนย์ภาษา</ListSubheader>
-                <MenuItem value={12}>
-                  ภาษาไทยสำหรับนายทหารจากสาธารณรัฐสังคมนิยมเวีดนาม
-                </MenuItem>
-                <MenuItem value={13}>
-                  ภาษาอังกฤษสำหรับเสมียน สน.ผชท.ไทย/ต่างประเทศ
-                </MenuItem>
-                <MenuItem value={14}>ภาษาไทยสำหรับนายทหารต่างประเทศ</MenuItem>
-                <ListSubheader>สำนักบริหารการศึกษา</ListSubheader>
-                <MenuItem value={15}>ภาษาไทยสำหรับนายทหารต่างประเทศ</MenuItem>
-                <MenuItem value={16}>นายทหารการศึกษาและการฝึก</MenuItem>
-                <MenuItem value={17}>เจ้าหน้าที่การศึกษาและการฝึก</MenuItem>
-              </Select>
-            </FormControl>
-            
-          </Box>
-        {/*</React.Fragment>*/}
-        {/*<DropdownSelectSchool />*/}
-        <a href="/login">
-          <Button variant="outlined" sx={{ minWidth: 500 }}>
-            ตกลง
-          </Button>
-        </a>
+              ))}
+
+
+            </Select>
+          </FormControl>
+
+        </Box>
+
+        {/*<a href="/login">*/}
+        <Button
+          variant="outlined"
+          sx={{ minWidth: 500 }}
+          onClick={() => {
+            //toLogIn(SelectCourse);
+            console.log(SelectCourse);
+            toLogIn(SelectCourse);
+          }}
+        >
+          ตกลง
+        </Button>
+        {/*</a>*/}
       </Box>
     </React.Fragment>
   );
