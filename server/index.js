@@ -33,7 +33,8 @@ app.get("/Academy", (req, res) => {
 //รับค่าวิชาของสถานศึกษาจาก tbcoursesubjects
 app.get("/TableSubject", (req, res) => {
   const sqlSelect =
-    "SELECT SubjectId AS id,SubjectNr,SubjectName,SubjectCreditOrScore FROM tbcoursesubjects WHERE CourseId = 011";
+    //"SELECT SubjectId AS id,SubjectNr,SubjectName,SubjectCreditOrScore FROM tbcoursesubjects WHERE CourseId = 011";
+    "SELECT SubjectId AS id,SubjectNr,SubjectName,SubjectCreditOrScore,CourseId FROM tbcoursesubjects";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       console.log(err);
@@ -113,10 +114,11 @@ app.get("/PmeCourse", (req, res) => {
 //แก้ไขชั่วโมงการศึกษาของหลักสูตร
 app.put("/UpdateCourseHrs", (req, res) => {
   const sqlUpdate =
-  "UPDATE tbpmecourse SET CourseTotalHrs = ? WHERE CourseId=011 ";
+  "UPDATE tbpmecourse SET CourseTotalHrs = ? WHERE CourseId= ? ";
   const CourseHrs = req.body.CourseHrs;
+  const CourseId = req.body.CourseId;
   db.query(
-    sqlUpdate,[CourseHrs],
+    sqlUpdate,[CourseHrs,CourseId],
     (err, result) => {
       if (err) {
         console.log(err);

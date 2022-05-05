@@ -9,9 +9,11 @@ import DialogActions from "@mui/material/DialogActions";
 //import DialogContent from "@mui/material/DialogContent";
 //import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useSelector } from "react-redux";
 
 export default function AddSubject() {
 
+  const CourseId = useSelector((state => state.course.CourseId));
   //ตั้งค่า Dialog
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -24,7 +26,7 @@ export default function AddSubject() {
   const [SubjectNr, setSubjectNr] = useState(0);
   const [SubjectName, setSubjectName] = useState("");
   const [SubjectCredit, setSubjectCredit] = useState(0);
-  const [CourseId, setCourseId] = useState("");
+  //const [CourseId, setCourseId] = useState("");
   const addSubject = () => {
     Axios.post(('http://localhost:3001/AddSubject'), {
       
@@ -82,9 +84,10 @@ export default function AddSubject() {
           <OutlinedInput
             id="CourseId"
             label="รหัสสถานศึกษา"
-            onChange={(event) => {
+            value={CourseId}
+            /*onChange={(event) => {
               setCourseId(event.target.value);
-            }}
+            }}*/
           />
         </FormControl>
 

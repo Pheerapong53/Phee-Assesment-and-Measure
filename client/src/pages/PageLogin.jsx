@@ -5,18 +5,22 @@ import ButtonRegister from '../components/ฺButtonRegister'
 import Button from '@mui/material/Button';
 import NavbarLogin from '../components/NavbarLogin'
 import { useLocation } from "react-router-dom";
+import { useSelector } from 'react-redux';
+
 
 export default function PageLogin() {
 
-  const location = useLocation();
-  console.log(location);
+  const course = useSelector((state) => state.course)
+  console.log(course);
+ //const location = useLocation();
+  //console.log(location);
   //const [CourseName, setCourseName] = useState(location.state.CourseName);
   //console.log(CourseName);
   return(
     <React.Fragment>
             <NavbarLogin />
             <div className="containerPageLogin">
-              2
+              
                 <div className="containerLogin">
                         <img src={Logo} alt="logo" className="logoLogin" />
                         <p className="HeadTextLogin">ระบบสารสนเทศเพื่อการวัดและประเมินผลการศึกษา</p>

@@ -1,3 +1,5 @@
+
+import React from 'react'
 import PageSelectSchool from './pages/PageSelectSchool'
 import PageLogin from './pages/PageLogin'
 import PageRegisStu from './pages/PageRegisStu'
@@ -37,8 +39,7 @@ function App() {
  
   
   return (
-    
-    
+  
     <Router>
       <Routes >
         <Route path='/' element={<PageSelectSchool/>} />
@@ -53,7 +54,7 @@ function App() {
         <Route path='/PageAttribute' element={<PageAttribute/>} />
         <Route path='/PageSummarize' element={<PageSummarize/>} />
         <Route path='/PageStudyResults' element={<PageStudyResults/>} />
-        <Route path='/PageSubject' element={<PageSubject/>} />
+        <Route path='/PageSubject' element={<PageSubject />} />
         <Route path='/PagePersonalAttributes' element={<PagePersonalAttributes/>} />
         <Route path='/PageListTeacher' element={<PageListTeacher/>} />
         <Route path='/PageManage' element={<PageManage/>} />

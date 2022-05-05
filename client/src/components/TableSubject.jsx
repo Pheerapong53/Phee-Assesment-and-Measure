@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useState,useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { DeleteOutline } from "@material-ui/icons";
 import Axios from "axios";
-import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -11,10 +10,23 @@ import { useNavigate } from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import { useSelector, useDispatch } from "react-redux";
+import { updateHrs } from "../slices/courseSlice";
+
 
 export default function TableSubject() {
   
+
   const server = 'http://localhost:3001';
+  const dispatch = useDispatch();
+
+  //Persist Store
+  const CourseId = useSelector((state) => state.course.CourseId);
+  const Hrs = useSelector((state) => state.course.CourseTotalHrs);
+  console.log(Hrs);
+  console.log(CourseId);
+ 
+  
   //กำหนดคอลัมน์ให้ Table Datagrid
   const columns = [
     { field: "SubjectNr", headerName: "หมวดวิชาที่", width: 300 },
@@ -109,29 +121,38 @@ export default function TableSubject() {
     });
   }, []);
 
+  const SubjectFilter = SubjectList.filter((val) => {
+    return val.CourseId == CourseId;
+  })
+  
+  //console.log(SubjectFilter);
   //รับค่าชั่วโมงการศึกษา
-  const [CourseHrs, setCourseHrs] = useState([]);
+  const [CourseHrs, setCourseHrs] = useState(Hrs);
 
-  useEffect(() => {
+ /* useEffect(() => {
     Axios.get(`${server}/PmeCourse`).then((response) => {
       setCourseHrs(response.data[0].Hrs);
     });
-  }, []);
+  }, []);*/
 
   //แก้ไขชั่วโมงการศึกษา
   const UpdateCourseHrs = () => {
     Axios.put((`${server}/UpdateCourseHrs`), {
+      CourseId: CourseId,
       CourseHrs: CourseHrs
     }).then((res) => {
         console.log(res);
         console.log(res.data);
       });
   };
+ 
 
   return (
+    
     <React.Fragment>
       <div className="cotainerDetail">
         <p className="HeadTextMain">หมวดวิชาของสถานศึกษา</p>
+      
         <Container>
           <div style={{ height: 400, width: "100%" }}>
             <div className="ContainerInputSubject">
@@ -157,7 +178,7 @@ export default function TableSubject() {
             </div>
 
             <DataGrid
-              rows={SubjectList.filter((val) => {
+              rows={SubjectFilter.filter((val) => {
                 if (search == "") {
                   return val;
                 } else if (val.SubjectName.toLowerCase().includes(search.toLowerCase())) {
@@ -198,7 +219,7 @@ export default function TableSubject() {
             {/*Dialog ระยะเวลาการศึกษา*/}
             <Dialog
               open={open1}
-              onClose={handleClose}
+              onClose={handleClose1}
               aria-labelledby="alert-dialog-title"
             >
               <DialogTitle id="alert-dialog-title">
@@ -210,6 +231,7 @@ export default function TableSubject() {
                   color="primary"
                   onClick={() => {
                     UpdateCourseHrs();
+                    dispatch(updateHrs(CourseHrs));
                     handleClose1();
                   }}
                 >
@@ -218,7 +240,11 @@ export default function TableSubject() {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={handleClose1}
+                  //refresh page to clear data
+                  onClick={() => {
+                    handleClose1();
+                    window.location.reload();
+                  }}
                 >
                   Cancel
                 </Button>
@@ -246,7 +272,9 @@ export default function TableSubject() {
                 variant="contained"
                 color="primary"
                 sx={{ minWidth: 50, mx: 1 }}
-                onClick={handleClickOpen1}
+                onClick={
+                  handleClickOpen1
+                }
               >
                 บันทึก
               </Button>
@@ -257,3 +285,6 @@ export default function TableSubject() {
     </React.Fragment>
   );
 }
+
+
+
